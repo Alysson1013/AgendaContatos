@@ -1,5 +1,7 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
+final String contactTable = "contactTable";
 final String idColumn = "idColumn";
 final String nameColumn = "nameColumn";
 final String emailColumn = "emailColumn";
@@ -9,6 +11,39 @@ final String imgColumn = "imgColumn";
 
 class ContactHelper {
 
+  //atributo unico e imutável que rescebe um construtor
+  static final ContactHelper _instance = ContactHelper.internal();
+
+  //chamada da classe, usando factory, para nem sempre concretizar um novo objeto
+  factory ContactHelper() => _instance;
+
+  //declaração de construtor
+  ContactHelper.internal();
+
+  Database _db;
+
+  Future<Database> get db async{
+    //verifica se o db está iniciado
+    if(_db != null) return _db;
+    else{
+      _db = await initDb();
+      return _db;
+    }
+  }
+
+  Future<Database> initDb() async {
+    //pegar local do banco de dados
+    final databasesPath = await getDatabasesPath();
+    //local do banco de dados e o nome do arquivo
+    final path = join(databasesPath, "contacts.db");
+    
+    //abrir banco de dados
+    return openDatabase(path, version: 1, onCreate: (Database db, int neweVersion) async {
+      await db.execute(
+        "CREATE TABLE $contactTable($idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT, $phoneColumn TEXT, $imgColumn)"
+      );
+    });
+  }
 }
 
 class Contact {
