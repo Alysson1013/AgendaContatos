@@ -25,7 +25,6 @@ class ContactHelper {
 
   //declaração de construtor
   ContactHelper.internal();
-
   Database _db;
 
   Future<Database> get db async{
@@ -42,7 +41,7 @@ class ContactHelper {
     final databasesPath = await getDatabasesPath();
     //local do banco de dados e o nome do arquivo
     final path = join(databasesPath, "contacts.db");
-    
+
     //abrir banco de dados
     return openDatabase(path, version: 1, onCreate: (Database db, int neweVersion) async {
       await db.execute(
@@ -66,6 +65,42 @@ class ContactHelper {
     if(maps.length > 0) return Contact.fromMap(maps.first);////
     else return null;
   }
+
+  Future<int> deleteContact(int id) async{
+    Database dbContact = await db;
+    return dbContact.delete(contactTable, where: "$idColumn = ?", whereArgs: [id]);
+  }
+
+  Future<int> updateContact(Contact contact) async{
+    Database dbContact = await db;
+    return await dbContact.update(contactTable, contact.toMap(), where: "$idColumn = ?", whereArgs: [contact.id]);
+  }
+
+  Future<List> getAllContacts() async{
+    //Chamado do Banco
+    Database dbContact = await db;
+    //Retrieve de todos os contatos no formarto de Map
+    List listMap = await dbContact.rawQuery("SELECT * FROM $contactTable");
+    //declaração de lista de contatos
+    List<Contact> listContact = List();
+    //Convertendo mapas em objetos Contact
+    for(Map m in listMap) listContact.add(Contact.fromMap(m));
+    return listContact;
+  }
+
+  Future<int> getNumber() async {
+    Database dbContact = await db;
+    //retorna quantidade de elemento na tabela
+    return Sqflite.firstIntValue(await dbContact.rawQuery("SELECT COUNT(*) FROM $contactTable"));
+  }
+
+  //fechar db
+  close() async{
+    Database dbContact = await db;
+    dbContact.close();
+  }
+
+
 }
 
 class Contact {
