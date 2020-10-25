@@ -1,3 +1,9 @@
+import 'dart:async';
+import 'dart:async';
+import 'dart:core';
+
+import 'package:async/async.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -44,6 +50,22 @@ class ContactHelper {
       );
     });
   }
+
+  Future<Contact> saveContact(Contact contact) async{
+    Database dbContact = await db;
+    contact.id = await dbContact.insert(contactTable, contact.toMap());
+    return contact;
+  }
+
+  Future<Contact> getContact(int id) async {
+    Database dbContact = await db;
+    List<Map> maps = await dbContact.query(contactTable,
+      columns: [idColumn, nameColumn, emailColumn, phoneColumn, imgColumn],
+      where: "$idColumn = ?",
+      whereArgs: [id]);
+    if(maps.length > 0) return Contact.fromMap(maps.first);////
+    else return null;
+  }
 }
 
 class Contact {
@@ -61,20 +83,21 @@ class Contact {
     email = map[emailColumn];
     phone = map[phoneColumn];
     img = map[imgColumn];
+  }
 
-    Map toMap (){
-      Map<String, dynamic> map = {
-        nameColumn: name,
-        emailColumn: email,
-        phoneColumn: phone,
-        imgColumn: img
-      };
+  Map toMap(){
+    Map<String, dynamic> map = {
+      nameColumn: name,
+      emailColumn: email,
+      phoneColumn: phone,
+      imgColumn: img
+    };
 
-      //caso o id não seja atribuido pelo db
-      if (id != null) map[idColumn] = id;
-
-      return map;
+    //caso o id não seja atribuido pelo db
+    if (id != null){
+      map[idColumn] = id;
     }
+    return map;
   }
 
   @override
