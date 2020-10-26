@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:async';
 import 'dart:core';
-
-import 'package:async/async.dart';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
