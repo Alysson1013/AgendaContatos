@@ -17,6 +17,7 @@ final String imgColumn = "imgColumn";
 
 class ContactHelper {
 
+  //Só ira haver um objeto
   //atributo unico e imutável que rescebe um construtor
   static final ContactHelper _instance = ContactHelper.internal();
 
@@ -45,7 +46,7 @@ class ContactHelper {
     //abrir banco de dados
     return openDatabase(path, version: 1, onCreate: (Database db, int neweVersion) async {
       await db.execute(
-        "CREATE TABLE $contactTable($idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT, $phoneColumn TEXT, $imgColumn)"
+        "CREATE TABLE $contactTable($idColumn INTEGER PRIMARY KEY, $nameColumn TEXT, $emailColumn TEXT, $phoneColumn TEXT, $imgColumn TEXT)"
       );
     });
   }
@@ -111,6 +112,8 @@ class Contact {
   String phone;
   String img;
 
+  //Construtor Vazio
+  Contact();
   //Construtor a partir de um mapa
   Contact.fromMap(Map map){
     id = map[idColumn];
