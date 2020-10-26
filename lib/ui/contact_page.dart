@@ -17,6 +17,7 @@ class _ContactPageState extends State<ContactPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _nameFocus = FocusNode();
 
   Contact _editContact;
   //indica alteração
@@ -46,7 +47,15 @@ class _ContactPageState extends State<ContactPage> {
         backgroundColor: Colors.red,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+        onPressed: (){
+          //verifica sem o nome do objeto está vazio
+          if (_editContact.name != null && _editContact.name.isNotEmpty){
+            //retorna o objeto preenchido
+            Navigator.pop(context, _editContact);
+          } else {
+            FocusScope.of(context).requestFocus(_nameFocus);
+          }
+        },
         child: Icon(Icons.save),
         backgroundColor: Colors.red,
       ),
@@ -67,6 +76,7 @@ class _ContactPageState extends State<ContactPage> {
               ),
             ),
             TextField(
+              focusNode: _nameFocus,
               controller: _nameController,
               decoration: InputDecoration(labelText: "Nome"),
               onChanged: (text){
