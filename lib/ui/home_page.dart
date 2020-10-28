@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   ContactHelper helper = ContactHelper();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,8 +76,71 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onTap: (){
-        _showContactPage(contact: contacts[index]);
+        _showOptions(context, index);
       },
+    );
+  }
+
+  void _showOptions(BuildContext context, int index){
+    showModalBottomSheet(
+        context: context,
+        builder: (context){
+          return BottomSheet(
+              builder: (context){
+                return Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                          child: FlatButton(
+                            child: Text(
+                              "Ligar",
+                               style: TextStyle(color: Colors.red, fontSize: 20.0),
+                            ),
+                            onPressed: (){},
+                          ),
+                        ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: FlatButton(
+                          child: Text(
+                            "Editar",
+                             style: TextStyle(color: Colors.red, fontSize: 20.0),
+                          ),
+                          onPressed: (){
+                            //Fecha a aba de opções
+                            Navigator.pop(context);
+                            //Chama a aba de contato
+                            _showContactPage(contact: contacts[index]);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: FlatButton(
+                          child: Text(
+                            "Excluir",
+                             style: TextStyle(color: Colors.red, fontSize: 20.0),
+                          ),
+                          onPressed: (){
+                            //deleta o contato pela id
+                            helper.deleteContact(contacts[index].id);
+                            setState(() {
+                              contacts.removeAt(index);
+                              Navigator.pop(context);
+                            });
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            onClosing: () {},
+          );
+        }
     );
   }
 
@@ -89,7 +153,6 @@ class _HomePageState extends State<HomePage> {
     if (recContact != null){
       if (contact != null) await helper.updateContact(recContact);
       else await helper.saveContact(recContact);
-
       _getAllContacts();
     }
   }
